@@ -29,6 +29,29 @@
     <script>
         let streak = 0;
 
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + d.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        }
+
+        function getCookie(name) {
+            const cname = name + "=";
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const ca = decodedCookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(cname) === 0) {
+                    return c.substring(cname.length, c.length);
+                }
+            }
+            return "";
+        }
+
         function generateProblem() {
             const num1 = Math.floor(Math.random() * 10) + 1;
             const num2 = Math.floor(Math.random() * 10) + 1;
@@ -84,11 +107,13 @@
                         result.textContent = '¡Correcto!';
                         result.className = 'result text-success';
                         streak++;
+                        setCookie('streak', streak, 7);
                         document.getElementById('streak').textContent = streak;
                     } else {
                         result.textContent = `Incorrecto. La respuesta correcta es ${solution}.`;
                         result.className = 'result text-danger';
                         streak = 0;
+                        setCookie('streak', streak, 7);
                         document.getElementById('streak').textContent = streak;
                         renderProblems();
                     }
@@ -99,8 +124,15 @@
 
         document.getElementById('generate').addEventListener('click', renderProblems);
 
-        // Generar problemas al cargar la página
-        renderProblems();
+        // Recuperar la racha de las cookies al cargar la página
+        window.onload = function() {
+            const savedStreak = getCookie('streak');
+            if (savedStreak) {
+                streak = parseInt(savedStreak);
+                document.getElementById('streak').textContent = streak;
+            }
+            renderProblems();
+        };
     </script>
 </body>
 </html>
