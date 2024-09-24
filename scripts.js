@@ -24,9 +24,17 @@ function getCookie(name) {
 }
 
 function generateProblem() {
-    const num1 = Math.floor(Math.random() * 10) + 1;
-    const num2 = Math.floor(Math.random() * 10) + 1;
-    const operator = ['+', '-', '*', '/', '^'][Math.floor(Math.random() * 5)];
+    let num1, num2, operator;
+    if (streak > 6) {
+        num1 = Math.floor(Math.random() * 100) + 1;
+        num2 = Math.floor(Math.random() * 100) + 1;
+        operator = ['+', '-', '*', '/', '^', '%'][Math.floor(Math.random() * 6)];
+    } else {
+        num1 = Math.floor(Math.random() * 10) + 1;
+        num2 = Math.floor(Math.random() * 10) + 1;
+        operator = ['+', '-', '*', '/', '^'][Math.floor(Math.random() * 5)];
+    }
+
     let problem, solution;
     switch (operator) {
         case '+':
@@ -48,6 +56,10 @@ function generateProblem() {
         case '^':
             problem = `${num1} ^ ${num2}`;
             solution = Math.pow(num1, num2);
+            break;
+        case '%':
+            problem = `${num1} % ${num2}`;
+            solution = num1 % num2;
             break;
     }
     return { problem, solution };
@@ -95,7 +107,6 @@ function renderProblems() {
 
 document.getElementById('generate').addEventListener('click', renderProblems);
 
-// Recuperar la racha de las cookies al cargar la página
 window.onload = function() {
     const savedStreak = getCookie('streak');
     if (savedStreak) {
