@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Problemas Matemáticos</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
     <style>
         .main-content {
             display: flex;
+            justify-content: space-between;
         }
         .problems-container {
             flex: 1;
@@ -25,26 +25,20 @@
         <div class="main-content">
             <div class="problems-container">
                 <div id="problems" class="mt-4">
-                    <!-- Problemas se generan aquí -->
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Problema</th>
+                                <th>Respuesta</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="problems-table">
+                            <!-- Problemas se mostrarán aquí -->
+                        </tbody>
+                    </table>
                 </div>
-                <button id="generate" class="btn btn-primary btn-block mt-3">Generar Problema</button>
-                <div class="mt-3 text-center">
-                    <h3>Racha: <span id="streak">0</span></h3>
-                </div>
-            </div>
-            <div class="table-container">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Problema</th>
-                            <th>Respuesta</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="problems-table">
-                        <!-- Problemas se mostrarán aquí -->
-                    </tbody>
-                </table>
+                <button id="generate" class="btn btn-primary mt-3">Generar Problema</button>
             </div>
         </div>
     </div>
