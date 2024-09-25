@@ -41,7 +41,8 @@
     <script type="module">
       // Import the functions you need from the SDKs you need
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-      import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics.js";
+      import { getDatabase, ref, set, get, child, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
 
       // Your web app's Firebase configuration
       const firebaseConfig = {
@@ -56,11 +57,97 @@
 
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
       const database = getDatabase(app);
 
-      // Export database for use in scripts.js
-      export { database, ref, set, get, child };
+      // Funciones para interactuar con la base de datos
+      function saveStreakToDatabase(userName, streak) {
+        set(ref(database, 'users/' + userName), {
+          streak: streak
+        });
+      }
+
+      function loadLeaderboard() {
+        const leaderboardRef = query(ref(database, 'users'), orderByChild('streak'), limitToLast(10));
+        onValue(leaderboardRef, (snapshot) => {
+          let leaderboard = document.getElementById("leaderboard");
+          leaderboard.innerHTML = "";
+          snapshot.forEach((childSnapshot) => {
+            let childData = childSnapshot.val();
+            let listItem = document.createElement("li");
+            listItem.textContent = childSnapshot.key + ": " + childData.streak;
+            leaderboard.appendChild(listItem);
+          });
+        });
+      }
+
+      // Inicializar la aplicación
+      window.onload = function() {
+        let userName = getCookie("userName");
+        if (!userName) {
+          userName = prompt("Por favor, ingresa tu nombre:");
+          setCookie("userName", userName, 365);
+        }
+        document.getElementById("streak").innerText = streak;
+        loadLeaderboard();
+      };
+
+      // Funciones para manejar cookies
+      function setCookie(name, value, days) {
+        const d = new Date();
+        d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+        const expires = "expires=" + d.toUTCString();
+        document.cookie = name + "=" + value + ";" + expires + ";path=/";
+      }
+
+      function getCookie(name) {
+        const cname = name + "=";
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) === ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(cname) === 0) {
+            return c.substring(cname.length, c.length);
+          }
+        }
+        return "";
+      }
+
+      // Función para generar problemas matemáticos
+      function generateProblem() {
+        let num1, num2, operator;
+        if (streak > 12) {
+          num1 = Math.floor(Math.random() * 1000) + 1;
+          num2 = Math.floor(Math.random() * 1000) + 1;
+          operator = ['+', '-', '*', '/', '^', '%'][Math.floor(Math.random() * 6)];
+        } else if (streak > 6) {
+          num1 = Math.floor(Math.random() * 100) + 1;
+          num2 = Math.floor(Math.random() * 100) + 1;
+          operator = ['+', '-', '*', '/', '^', '%'][Math.floor(Math.random() * 6)];
+        } else {
+          num1 = Math.floor(Math.random() * 10) + 1;
+          num2 = Math.floor(Math.random() * 10) + 1;
+          operator = ['+', '-', '*', '/', '^'][Math.floor(Math.random() * 5)];
+        }
+
+        let problem, solution;
+        // Aquí iría la lógica para generar el problema y la solución
+      }
+
+      // Función para actualizar la racha
+      function updateStreak(newStreak) {
+        streak = newStreak;
+        document.getElementById("streak").innerText = streak;
+        saveStreakToDatabase(userName, streak);
+      }
+
+      document.getElementById("generate").addEventListener("click", function() {
+        generateProblem();
+        // Aquí iría la lógica para manejar la generación de problemas y actualización de rachas
+      });
     </script>
-    <script src="scripts.js" type="module"></script>
 </body>
 </html>
