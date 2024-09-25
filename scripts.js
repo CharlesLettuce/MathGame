@@ -1,26 +1,24 @@
-let streak = 0;
+import { database, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
 
-function setCookie(name, value, days) {
-    const d = new Date();
-    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-    const expires = "expires=" + d.toUTCString();
-    document.cookie = name + "=" + value + ";" + expires + ";path=/";
+let streak = 0;
+let username = '';
+
+function saveStreakToFirebase() {
+    set(ref(database, 'streaks/' + username), {
+        streak: streak
+    });
 }
 
-function getCookie(name) {
-    const cname = name + "=";
-    const decodedCookie = decodeURIComponent(document.cookie);
-    const ca = decodedCookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') {
-            c = c.substring(1);
+function getStreakFromFirebase() {
+    const dbRef = ref(database);
+    get(child(dbRef, `streaks/${username}`)).then((snapshot) => {
+        if (snapshot.exists()) {
+            streak = snapshot.val().streak;
+            document.getElementById('streak').textContent = streak;
         }
-        if (c.indexOf(cname) === 0) {
-            return c.substring(cname.length, c.length);
-        }
-    }
-    return "";
+    }).catch((error) => {
+        console.error(error);
+    });
 }
 
 function generateProblem() {
@@ -93,13 +91,13 @@ function renderProblem() {
             result.textContent = '¡Correcto!';
             result.className = 'result text-success';
             streak++;
-            setCookie('streak', streak, 7);
+            saveStreakToFirebase();
             document.getElementById('streak').textContent = streak;
         } else {
             result.textContent = `Incorrecto. La respuesta correcta es ${solution}.`;
             result.className = 'result text-danger';
             streak = 0;
-            setCookie('streak', streak, 7);
+            saveStreakToFirebase();
             document.getElementById('streak').textContent = streak;
         }
         renderProblem();
@@ -110,10 +108,9 @@ function renderProblem() {
 document.getElementById('generate').addEventListener('click', renderProblem);
 
 window.onload = function() {
-    const savedStreak = getCookie('streak');
-    if (savedStreak) {
-        streak = parseInt(savedStreak);
-        document.getElementById('streak').textContent = streak;
+    username = prompt("Por favor, ingresa tu nombre:");
+    if (username) {
+        getStreakFromFirebase();
     }
     renderProblem();
 };
