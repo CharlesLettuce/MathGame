@@ -13,7 +13,7 @@
         <div id="problems" class="mt-4">
             <!-- Problemas se generan aquí -->
         </div>
-        <button id="generate" class="btn btn-primary btn-block">Generar Nuevos Problemas</button>
+        <button id="generate" class="btn btn-primary btn-block">Im LGBTQ+</button>
         <div class="mt-3 text-center">
             <h3>Racha: <span id="streak">0</span></h3>
         </div>
@@ -39,115 +39,114 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script type="module">
-      // Import the functions you need from the SDKs you need
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics.js";
-      import { getDatabase, ref, set, get, child, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
-      // Your web app's Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyABMS77iaYsQhsywkFhoK5BSdWri6eXw9I",
-        authDomain: "maths-f5940.firebaseapp.com",
-        projectId: "maths-f5940",
-        storageBucket: "maths-f5940.appspot.com",
-        messagingSenderId: "920913032237",
-        appId: "1:920913032237:web:abc159c81666084496b4a4",
-        measurementId: "G-ZNKKL574DW"
-      };
+        const firebaseConfig = {
+            apiKey: "AIzaSyABMS77iaYsQhsywkFhoK5BSdWri6eXw9I",
+            authDomain: "maths-f5940.firebaseapp.com",
+            projectId: "maths-f5940",
+            storageBucket: "maths-f5940.appspot.com",
+            messagingSenderId: "920913032237",
+            appId: "1:920913032237:web:abc159c81666084496b4a4",
+            measurementId: "G-ZNKKL574DW"
+        };
 
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-      const analytics = getAnalytics(app);
-      const database = getDatabase(app);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-      // Funciones para interactuar con la base de datos
-      function saveStreakToDatabase(userName, streak) {
-        set(ref(database, 'users/' + userName), {
-          streak: streak
-        });
-      }
+        let userName = prompt("Por favor, ingresa tu nombre:");
+        let userDocRef = doc(db, "users", userName);
 
-      function loadLeaderboard() {
-        const leaderboardRef = query(ref(database, 'users'), orderByChild('streak'), limitToLast(10));
-        onValue(leaderboardRef, (snapshot) => {
-          let leaderboard = document.getElementById("leaderboard");
-          leaderboard.innerHTML = "";
-          snapshot.forEach((childSnapshot) => {
-            let childData = childSnapshot.val();
-            let listItem = document.createElement("li");
-            listItem.textContent = childSnapshot.key + ": " + childData.streak;
-            leaderboard.appendChild(listItem);
-          });
-        });
-      }
-
-      // Inicializar la aplicación
-      window.onload = function() {
-        let userName = getCookie("userName");
-        if (!userName) {
-          userName = prompt("Por favor, ingresa tu nombre:");
-          setCookie("userName", userName, 365);
+        async function getUserData() {
+            const userDoc = await getDoc(userDocRef);
+            if (userDoc.exists()) {
+                return userDoc.data();
+            } else {
+                await setDoc(userDocRef, { streak: 0 });
+                return { streak: 0 };
+            }
         }
+
+        async function updateUserData(newStreak) {
+            await setDoc(userDocRef, { streak: newStreak });
+        }
+
+        let userData = await getUserData();
+        let streak = userData.streak;
         document.getElementById("streak").innerText = streak;
-        loadLeaderboard();
-      };
 
-      // Funciones para manejar cookies
-      function setCookie(name, value, days) {
-        const d = new Date();
-        d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-        const expires = "expires=" + d.toUTCString();
-        document.cookie = name + "=" + value + ";" + expires + ";path=/";
-      }
+        function generateProblem() {
+            let num1, num2, operator;
+            if (streak > 12) {
+                num1 = Math.floor(Math.random() * 1000) + 1;
+                num2 = Math.floor(Math.random() * 1000) + 1;
+                operator = ['+', '-', '*', '/', '^', '%'][Math.floor(Math.random() * 6)];
+            } else if (streak > 6) {
+                num1 = Math.floor(Math.random() * 100) + 1;
+                num2 = Math.floor(Math.random() * 100) + 1;
+                operator = ['+', '-', '*', '/', '^', '%'][Math.floor(Math.random() * 6)];
+            } else {
+                num1 = Math.floor(Math.random() * 10) + 1;
+                num2 = Math.floor(Math.random() * 10) + 1;
+                operator = ['+', '-', '*', '/', '^'][Math.floor(Math.random() * 5)];
+            }
 
-      function getCookie(name) {
-        const cname = name + "=";
-        const decodedCookie = decodeURIComponent(document.cookie);
-        const ca = decodedCookie.split(';');
-        for (let i = 0; i < ca.length; i++) {
-          let c = ca[i];
-          while (c.charAt(0) === ' ') {
-            c = c.substring(1);
-          }
-          if (c.indexOf(cname) === 0) {
-            return c.substring(cname.length, c.length);
-          }
+            let problem = `${num1} ${operator} ${num2}`;
+            let solution;
+            switch (operator) {
+                case '+':
+                    solution = num1 + num2;
+                    break;
+                case '-':
+                    solution = num1 - num2;
+                    break;
+                case '*':
+                    solution = num1 * num2;
+                    break;
+                case '/':
+                    solution = (num1 / num2).toFixed(2);
+                    break;
+                case '^':
+                    solution = Math.pow(num1, num2);
+                    break;
+                case '%':
+                    solution = num1 % num2;
+                    break;
+            }
+
+            let problemDiv = document.createElement("div");
+            problemDiv.className = "problem";
+            problemDiv.innerHTML = `
+                <p>${problem} = ?</p>
+                <input type="text" class="form-control answer" data-solution="${solution}">
+                <button class="btn btn-success mt-2 check-answer">Comprobar</button>
+            `;
+            document.getElementById("problems").appendChild(problemDiv);
         }
-        return "";
-      }
 
-      // Función para generar problemas matemáticos
-      function generateProblem() {
-        let num1, num2, operator;
-        if (streak > 12) {
-          num1 = Math.floor(Math.random() * 1000) + 1;
-          num2 = Math.floor(Math.random() * 1000) + 1;
-          operator = ['+', '-', '*', '/', '^', '%'][Math.floor(Math.random() * 6)];
-        } else if (streak > 6) {
-          num1 = Math.floor(Math.random() * 100) + 1;
-          num2 = Math.floor(Math.random() * 100) + 1;
-          operator = ['+', '-', '*', '/', '^', '%'][Math.floor(Math.random() * 6)];
-        } else {
-          num1 = Math.floor(Math.random() * 10) + 1;
-          num2 = Math.floor(Math.random() * 10) + 1;
-          operator = ['+', '-', '*', '/', '^'][Math.floor(Math.random() * 5)];
+        function updateStreak(newStreak) {
+            streak = newStreak;
+            document.getElementById("streak").innerText = streak;
+            updateUserData(streak);
         }
 
-        let problem, solution;
-        // Aquí iría la lógica para generar el problema y la solución
-      }
+        document.getElementById("generate").addEventListener("click", function() {
+            generateProblem();
+        });
 
-      // Función para actualizar la racha
-      function updateStreak(newStreak) {
-        streak = newStreak;
-        document.getElementById("streak").innerText = streak;
-        saveStreakToDatabase(userName, streak);
-      }
-
-      document.getElementById("generate").addEventListener("click", function() {
-        generateProblem();
-        // Aquí iría la lógica para manejar la generación de problemas y actualización de rachas
-      });
+        document.addEventListener("click", function(event) {
+            if (event.target.classList.contains("check-answer")) {
+                let answerInput = event.target.previousElementSibling;
+                let solution = answerInput.getAttribute("data-solution");
+                if (answerInput.value == solution) {
+                    updateStreak(streak + 1);
+                    alert("¡Correcto!");
+                } else {
+                    updateStreak(0);
+                    alert("Incorrecto. La respuesta correcta era " + solution);
+                }
+                answerInput.value = "";
+            }
+        });
     </script>
-</body>
-</html>
