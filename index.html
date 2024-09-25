@@ -6,16 +6,46 @@
     <title>Problemas Matemáticos</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
+    <style>
+        .main-content {
+            display: flex;
+        }
+        .problems-container {
+            flex: 1;
+        }
+        .table-container {
+            flex: 1;
+            margin-left: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
         <h1 class="text-center">Resuelve los Problemas Matemáticos</h1>
-        <div id="problems" class="mt-4">
-            <!-- Problemas se generan aquí -->
-        </div>
-        <button id="generate" class="btn btn-primary btn-block">Im LGBTQ+</button>
-        <div class="mt-3 text-center">
-            <h3>Racha: <span id="streak">0</span></h3>
+        <div class="main-content">
+            <div class="problems-container">
+                <div id="problems" class="mt-4">
+                    <!-- Problemas se generan aquí -->
+                </div>
+                <button id="generate" class="btn btn-primary btn-block mt-3">Generar Problema</button>
+                <div class="mt-3 text-center">
+                    <h3>Racha: <span id="streak">0</span></h3>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Problema</th>
+                            <th>Respuesta</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="problems-table">
+                        <!-- Problemas se mostrarán aquí -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -115,14 +145,13 @@
                     break;
             }
 
-            let problemDiv = document.createElement("div");
-            problemDiv.className = "problem";
-            problemDiv.innerHTML = `
-                <p>${problem} = ?</p>
-                <input type="text" class="form-control answer" data-solution="${solution}">
-                <button class="btn btn-success mt-2 check-answer">Comprobar</button>
+            let problemRow = document.createElement("tr");
+            problemRow.innerHTML = `
+                <td>${problem}</td>
+                <td><input type="text" class="form-control answer" data-solution="${solution}"></td>
+                <td><button class="btn btn-success check-answer">Comprobar</button></td>
             `;
-            document.getElementById("problems").appendChild(problemDiv);
+            document.getElementById("problems-table").appendChild(problemRow);
         }
 
         function updateStreak(newStreak) {
@@ -137,7 +166,7 @@
 
         document.addEventListener("click", function(event) {
             if (event.target.classList.contains("check-answer")) {
-                let answerInput = event.target.previousElementSibling;
+                let answerInput = event.target.closest("tr").querySelector(".answer");
                 let solution = answerInput.getAttribute("data-solution");
                 if (answerInput.value == solution) {
                     updateStreak(streak + 1);
@@ -150,3 +179,5 @@
             }
         });
     </script>
+</body>
+</html>
