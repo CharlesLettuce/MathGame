@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,39 +11,71 @@
             background-color: #121212;
             color: #ffffff;
         }
+
         .main-content {
             display: flex;
             justify-content: space-between;
         }
+
         .problems-container {
             flex: 1;
         }
+
         .table-container {
             flex: 1;
             margin-left: 20px;
         }
+
         .btn-primary {
             background-color: #1f1f1f;
             border-color: #1f1f1f;
         }
+
         .btn-primary:hover {
             background-color: #333333;
             border-color: #333333;
         }
+
         .table {
             color: #ffffff;
         }
-        .table th, .table td {
+
+        .table th,
+        .table td {
             border-color: #333333;
         }
+
         .bg-light {
             background-color: #1f1f1f !important;
         }
+
         .bg-dark {
             background-color: #000000 !important;
         }
     </style>
 </head>
+<script>
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyABMS77iaYsQhsywkFhoK5BSdWri6eXw9I",
+        authDomain: "maths-f5940.firebaseapp.com",
+        projectId: "maths-f5940",
+        storageBucket: "maths-f5940.appspot.com",
+        messagingSenderId: "920913032237",
+        appId: "1:920913032237:web:abc159c81666084496b4a4",
+        measurementId: "G-ZNKKL574DW"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    s
+</script>
+
 <body>
     <div class="container mt-5">
         <h1 class="text-center">Resuelve los Problemas Matemáticos</h1>
@@ -75,7 +108,8 @@
                 <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
                     <h5 class="text-uppercase">Contacto</h5>
                     <p>
-                        Visita mi <a href="https://github.com/CharlesLettuce" target="_blank">GitHub</a> y mi página personal <a href="https://charleslettuce.me" target="_blank">charleslettuce.me</a>.
+                        Visita mi <a href="https://github.com/CharlesLettuce" target="_blank">GitHub</a> y mi página
+                        personal <a href="https://charleslettuce.me" target="_blank">charleslettuce.me</a>.
                     </p>
                 </div>
             </div>
@@ -86,25 +120,6 @@
     </footer>
 
     <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
-
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyABMS77iaYsQhsywkFhoK5BSdWri6eXw9I",
-            authDomain: "maths-f5940.firebaseapp.com",
-            projectId: "maths-f5940",
-            storageBucket: "maths-f5940.appspot.com",
-            messagingSenderId: "920913032237",
-            appId: "1:920913032237:web:abc159c81666084496b4a4",
-            measurementId: "G-ZNKKL574DW"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
         // Get user name from cookies or prompt
         let userName = getCookie("userName");
         if (!userName) {
@@ -179,7 +194,7 @@
 
         generateProblem();
 
-        document.addEventListener("click", function(event) {
+        document.addEventListener("click", function (event) {
             if (event.target.classList.contains("check-answer")) {
                 let answerInput = event.target.previousElementSibling;
                 let solution = answerInput.getAttribute("data-solution");
@@ -217,4 +232,5 @@
         }
     </script>
 </body>
+
 </html>
