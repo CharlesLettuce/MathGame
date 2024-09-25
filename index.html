@@ -49,20 +49,22 @@
         <div class="main-content">
             <div class="problems-container">
                 <div id="problems" class="mt-4">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Problema</th>
-                                <th>Respuesta</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="problems-table">
-                            <!-- Problemas se mostrarán aquí -->
-                        </tbody>
-                    </table>
+                    <!-- Problemas se mostrarán aquí -->
                 </div>
-                <button id="generate" class="btn btn-primary mt-3">Generar Problema</button>
+            </div>
+            <div class="table-container">
+                <h2>Racha</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Racha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="streak-table">
+                        <!-- Racha se mostrará aquí -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -83,13 +85,43 @@
         </div>
     </footer>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        let userName = prompt("Por favor, ingresa tu nombre:");
-        let streak = localStorage.getItem(userName) ? parseInt(localStorage.getItem(userName)) : 0;
-        document.getElementById("streak").innerText = streak;
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyABMS77iaYsQhsywkFhoK5BSdWri6eXw9I",
+            authDomain: "maths-f5940.firebaseapp.com",
+            projectId: "maths-f5940",
+            storageBucket: "maths-f5940.appspot.com",
+            messagingSenderId: "920913032237",
+            appId: "1:920913032237:web:abc159c81666084496b4a4",
+            measurementId: "G-ZNKKL574DW"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Get user name from cookies or prompt
+        let userName = getCookie("userName");
+        if (!userName) {
+            userName = prompt("Por favor, ingresa tu nombre:");
+            setCookie("userName", userName, 365);
+        }
+
+        // Get streak from Firestore
+        let streak = 0;
+        const userDoc = doc(db, "users", userName);
+        const userSnap = await getDoc(userDoc);
+        if (userSnap.exists()) {
+            streak = userSnap.data().streak;
+        } else {
+            await setDoc(userDoc, { streak: 0 });
+        }
+        document.getElementById("streak-table").innerHTML = `<tr><td>${userName}</td><td id="streak">${streak}</td></tr>`;
 
         function generateProblem() {
             let num1, num2, operator;
@@ -130,28 +162,26 @@
                     break;
             }
 
-            let problemRow = document.createElement("tr");
-            problemRow.innerHTML = `
-                <td>${problem}</td>
-                <td><input type="text" class="form-control answer" data-solution="${solution}"></td>
-                <td><button class="btn btn-success check-answer">Comprobar</button></td>
+            let problemDiv = document.createElement("div");
+            problemDiv.innerHTML = `
+                <p>${problem}</p>
+                <input type="text" class="form-control answer" data-solution="${solution}">
+                <button class="btn btn-success check-answer mt-2">Comprobar</button>
             `;
-            document.getElementById("problems-table").appendChild(problemRow);
+            document.getElementById("problems").appendChild(problemDiv);
         }
 
         function updateStreak(newStreak) {
             streak = newStreak;
             document.getElementById("streak").innerText = streak;
-            localStorage.setItem(userName, streak);
+            setDoc(userDoc, { streak: streak });
         }
 
-        document.getElementById("generate").addEventListener("click", function() {
-            generateProblem();
-        });
+        generateProblem();
 
         document.addEventListener("click", function(event) {
             if (event.target.classList.contains("check-answer")) {
-                let answerInput = event.target.closest("tr").querySelector(".answer");
+                let answerInput = event.target.previousElementSibling;
                 let solution = answerInput.getAttribute("data-solution");
                 if (answerInput.value == solution) {
                     updateStreak(streak + 1);
@@ -161,8 +191,30 @@
                     alert("Incorrecto. La respuesta correcta era " + solution);
                 }
                 answerInput.value = "";
+                generateProblem();
             }
         });
+
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                let date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        function getCookie(name) {
+            let nameEQ = name + "=";
+            let ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
     </script>
 </body>
 </html>
