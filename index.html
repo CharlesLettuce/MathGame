@@ -6,6 +6,10 @@
     <title>Problemas Matemáticos</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+        }
         .main-content {
             display: flex;
             justify-content: space-between;
@@ -16,6 +20,26 @@
         .table-container {
             flex: 1;
             margin-left: 20px;
+        }
+        .btn-primary {
+            background-color: #1f1f1f;
+            border-color: #1f1f1f;
+        }
+        .btn-primary:hover {
+            background-color: #333333;
+            border-color: #333333;
+        }
+        .table {
+            color: #ffffff;
+        }
+        .table th, .table td {
+            border-color: #333333;
+        }
+        .bg-light {
+            background-color: #1f1f1f !important;
+        }
+        .bg-dark {
+            background-color: #000000 !important;
         }
     </style>
 </head>
@@ -62,42 +86,9 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyABMS77iaYsQhsywkFhoK5BSdWri6eXw9I",
-            authDomain: "maths-f5940.firebaseapp.com",
-            projectId: "maths-f5940",
-            storageBucket: "maths-f5940.appspot.com",
-            messagingSenderId: "920913032237",
-            appId: "1:920913032237:web:abc159c81666084496b4a4",
-            measurementId: "G-ZNKKL574DW"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
+    <script>
         let userName = prompt("Por favor, ingresa tu nombre:");
-        let userDocRef = doc(db, "users", userName);
-
-        async function getUserData() {
-            const userDoc = await getDoc(userDocRef);
-            if (userDoc.exists()) {
-                return userDoc.data();
-            } else {
-                await setDoc(userDocRef, { streak: 0 });
-                return { streak: 0 };
-            }
-        }
-
-        async function updateUserData(newStreak) {
-            await setDoc(userDocRef, { streak: newStreak });
-        }
-
-        let userData = await getUserData();
-        let streak = userData.streak;
+        let streak = localStorage.getItem(userName) ? parseInt(localStorage.getItem(userName)) : 0;
         document.getElementById("streak").innerText = streak;
 
         function generateProblem() {
@@ -151,7 +142,7 @@
         function updateStreak(newStreak) {
             streak = newStreak;
             document.getElementById("streak").innerText = streak;
-            updateUserData(streak);
+            localStorage.setItem(userName, streak);
         }
 
         document.getElementById("generate").addEventListener("click", function() {
