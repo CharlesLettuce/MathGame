@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,207 +7,64 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #121212;
-            color: #ffffff;
-        }
-
-        .main-content {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .problems-container {
-            flex: 1;
-        }
-
-        .table-container {
-            flex: 1;
-            margin-left: 20px;
-        }
-
-        .btn-primary {
-            background-color: #1f1f1f;
-            border-color: #1f1f1f;
-        }
-
-        .btn-primary:hover {
-            background-color: #333333;
-            border-color: #333333;
-        }
-
-        .table {
-            color: #ffffff;
-        }
-
-        .table th,
-        .table td {
-            border-color: #333333;
-        }
-
-        .bg-light {
-            background-color: #1f1f1f !important;
-        }
-
-        .bg-dark {
-            background-color: #000000 !important;
+            background-color: #f0f0f0;
         }
     </style>
 </head>
-<script>
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
-
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyABMS77iaYsQhsywkFhoK5BSdWri6eXw9I",
-        authDomain: "maths-f5940.firebaseapp.com",
-        projectId: "maths-f5940",
-        storageBucket: "maths-f5940.appspot.com",
-        messagingSenderId: "920913032237",
-        appId: "1:920913032237:web:abc159c81666084496b4a4",
-        measurementId: "G-ZNKKL574DW"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    s
-</script>
-
 <body>
     <div class="container mt-5">
-        <h1 class="text-center">Resuelve los Problemas Matemáticos</h1>
-        <div class="main-content">
-            <div class="problems-container">
-                <div id="problems" class="mt-4">
-                    <!-- Problemas se mostrarán aquí -->
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title text-center">Problemas Matemáticos</h1>
+                <div id="problem" class="text-center my-4"></div>
+                <div class="form-group text-center">
+                    <input type="number" id="answer" class="form-control w-25 mx-auto" placeholder="Tu respuesta">
                 </div>
-            </div>
-            <div class="table-container">
-                <h2>Racha</h2>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Racha</th>
-                        </tr>
-                    </thead>
-                    <tbody id="streak-table">
-                        <!-- Racha se mostrará aquí -->
-                    </tbody>
-                </table>
+                <div class="text-center">
+                    <button class="btn btn-primary" onclick="checkAnswer()">Enviar</button>
+                </div>
+                <div id="streak" class="text-center mt-4"></div>
             </div>
         </div>
     </div>
 
-    <footer class="bg-light text-center text-lg-start mt-auto">
-        <div class="container p-4">
-            <div class="row">
-                <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
-                    <h5 class="text-uppercase">Contacto</h5>
-                    <p>
-                        Visita mi <a href="https://github.com/CharlesLettuce" target="_blank">GitHub</a> y mi página
-                        personal <a href="https://charleslettuce.me" target="_blank">charleslettuce.me</a>.
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="text-center p-3 bg-dark text-white">
-            © 2024 Charles Lettuce
-        </div>
-    </footer>
-
-    <script type="module">
-        // Get user name from cookies or prompt
-        let userName = getCookie("userName");
-        if (!userName) {
-            userName = prompt("Por favor, ingresa tu nombre:");
-            setCookie("userName", userName, 365);
-        }
-
-        // Get streak from Firestore
-        let streak = 0;
-        const userDoc = doc(db, "users", userName);
-        const userSnap = await getDoc(userDoc);
-        if (userSnap.exists()) {
-            streak = userSnap.data().streak;
-        } else {
-            await setDoc(userDoc, { streak: 0 });
-        }
-        document.getElementById("streak-table").innerHTML = `<tr><td>${userName}</td><td id="streak">${streak}</td></tr>`;
+    <script>
+        let streak = getCookie("streak") ? parseInt(getCookie("streak")) : 0;
+        let currentProblem = {};
 
         function generateProblem() {
-            let num1, num2, operator;
-            if (streak > 12) {
-                num1 = Math.floor(Math.random() * 1000) + 1;
-                num2 = Math.floor(Math.random() * 1000) + 1;
-                operator = ['+', '-', '*', '/', '^', '%'][Math.floor(Math.random() * 6)];
-            } else if (streak > 6) {
-                num1 = Math.floor(Math.random() * 100) + 1;
-                num2 = Math.floor(Math.random() * 100) + 1;
-                operator = ['+', '-', '*', '/', '^', '%'][Math.floor(Math.random() * 6)];
+            let difficulty = Math.floor(streak / 5) + 1;
+            let num1 = Math.floor(Math.random() * 10 * difficulty);
+            let num2 = Math.floor(Math.random() * 10 * difficulty);
+            let operator = Math.random() > 0.5 ? '+' : '-';
+            currentProblem = {
+                num1: num1,
+                num2: num2,
+                operator: operator,
+                answer: operator === '+' ? num1 + num2 : num1 - num2
+            };
+            document.getElementById('problem').innerText = `${num1} ${operator} ${num2} = ?`;
+        }
+
+        function checkAnswer() {
+            let userAnswer = parseInt(document.getElementById('answer').value);
+            if (userAnswer === currentProblem.answer) {
+                streak++;
+                setCookie("streak", streak, 365);
+                alert("¡Correcto!");
             } else {
-                num1 = Math.floor(Math.random() * 10) + 1;
-                num2 = Math.floor(Math.random() * 10) + 1;
-                operator = ['+', '-', '*', '/', '^'][Math.floor(Math.random() * 5)];
+                streak = 0;
+                setCookie("streak", streak, 365);
+                alert("Incorrecto. La racha se ha reiniciado.");
             }
-
-            let problem = `${num1} ${operator} ${num2}`;
-            let solution;
-            switch (operator) {
-                case '+':
-                    solution = num1 + num2;
-                    break;
-                case '-':
-                    solution = num1 - num2;
-                    break;
-                case '*':
-                    solution = num1 * num2;
-                    break;
-                case '/':
-                    solution = (num1 / num2).toFixed(2);
-                    break;
-                case '^':
-                    solution = Math.pow(num1, num2);
-                    break;
-                case '%':
-                    solution = num1 % num2;
-                    break;
-            }
-
-            let problemDiv = document.createElement("div");
-            problemDiv.innerHTML = `
-                <p>${problem}</p>
-                <input type="text" class="form-control answer" data-solution="${solution}">
-                <button class="btn btn-success check-answer mt-2">Comprobar</button>
-            `;
-            document.getElementById("problems").appendChild(problemDiv);
+            document.getElementById('answer').value = '';
+            updateStreak();
+            generateProblem();
         }
 
-        function updateStreak(newStreak) {
-            streak = newStreak;
-            document.getElementById("streak").innerText = streak;
-            setDoc(userDoc, { streak: streak });
+        function updateStreak() {
+            document.getElementById('streak').innerText = `Racha: ${streak}`;
         }
-
-        generateProblem();
-
-        document.addEventListener("click", function (event) {
-            if (event.target.classList.contains("check-answer")) {
-                let answerInput = event.target.previousElementSibling;
-                let solution = answerInput.getAttribute("data-solution");
-                if (answerInput.value == solution) {
-                    updateStreak(streak + 1);
-                    alert("¡Correcto!");
-                } else {
-                    updateStreak(0);
-                    alert("Incorrecto. La respuesta correcta era " + solution);
-                }
-                answerInput.value = "";
-                generateProblem();
-            }
-        });
 
         function setCookie(name, value, days) {
             let expires = "";
@@ -225,12 +81,16 @@
             let ca = document.cookie.split(';');
             for (let i = 0; i < ca.length; i++) {
                 let c = ca[i];
-                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
             }
             return null;
         }
+
+        window.onload = function() {
+            updateStreak();
+            generateProblem();
+        }
     </script>
 </body>
-
 </html>
