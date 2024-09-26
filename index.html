@@ -8,6 +8,18 @@
     <style>
         body {
             background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            flex: 1;
+        }
+        footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
         }
     </style>
 </head>
@@ -18,15 +30,20 @@
                 <h1 class="card-title text-center">Problemas Matemáticos</h1>
                 <div id="problem" class="text-center my-4"></div>
                 <div class="form-group text-center">
-                    <input type="number" id="answer" class="form-control w-25 mx-auto" placeholder="Tu respuesta">
+                    <input type="number" id="answer" class="form-control w-25 mx-auto" placeholder="Tu respuesta" onkeydown="handleKeyDown(event)">
                 </div>
                 <div class="text-center">
-                    <button class="btn btn-primary" onclick="checkAnswer()">Enviar</button>
+                    <button id="submitBtn" class="btn btn-primary" onclick="checkAnswer()">Enviar</button>
                 </div>
                 <div id="streak" class="text-center mt-4"></div>
+                <div id="feedback" class="text-center mt-4"></div>
             </div>
         </div>
     </div>
+
+    <footer>
+        <p>Visita mi GitHub: <a href="https://github.com/CharlesLettuce" target="_blank" style="color: #ffc107;">CharlesLettuce</a></p>
+    </footer>
 
     <script>
         let streak = getCookie("streak") ? parseInt(getCookie("streak")) : 0;
@@ -48,14 +65,17 @@
 
         function checkAnswer() {
             let userAnswer = parseInt(document.getElementById('answer').value);
+            let feedback = document.getElementById('feedback');
             if (userAnswer === currentProblem.answer) {
                 streak++;
                 setCookie("streak", streak, 365);
-                alert("¡Correcto!");
+                feedback.innerText = "¡Correcto!";
+                feedback.style.color = "green";
             } else {
                 streak = 0;
                 setCookie("streak", streak, 365);
-                alert("Incorrecto. La racha se ha reiniciado.");
+                feedback.innerText = "Incorrecto. La racha se ha reiniciado.";
+                feedback.style.color = "red";
             }
             document.getElementById('answer').value = '';
             updateStreak();
@@ -85,6 +105,12 @@
                 if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
             }
             return null;
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
         }
 
         window.onload = function() {
