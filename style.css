@@ -13,3 +13,12 @@ footer {
     text-align: center;
     padding: 1rem 0;
 }
+#cookie-banner {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #f1f1f1;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+}
