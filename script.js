@@ -1,6 +1,17 @@
 let streak = getCookie("streak") ? parseInt(getCookie("streak")) : 0;
 let currentProblem = {};
 
+document.addEventListener('DOMContentLoaded', function() {
+    if (!getCookie('cookiesAccepted')) {
+        document.getElementById('cookie-banner').style.display = 'block';
+    }
+
+    document.getElementById('accept-cookies').addEventListener('click', function() {
+        setCookie('cookiesAccepted', 'true', 365);
+        document.getElementById('cookie-banner').style.display = 'none';
+    });
+});
+
 function generateProblem() {
     let difficulty = Math.floor(streak / 5) + 1;
     let num1 = Math.floor(Math.random() * 10 * difficulty);
@@ -89,19 +100,19 @@ function setCookie(name, value, days) {
     let expires = "";
     if (days) {
         let date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        date.setTime(date.getTime() + (days*24*60*60*1000));
         expires = "; expires=" + date.toUTCString();
     }
-    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
 }
 
 function getCookie(name) {
     let nameEQ = name + "=";
     let ca = document.cookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
+    for(let i=0;i < ca.length;i++) {
         let c = ca[i];
-        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
     }
     return null;
 }
