@@ -1,5 +1,5 @@
 let streak = getCookie("streak") ? parseInt(getCookie("streak")) : 0;
-let currentProblem = {};
+let currentProblem = getCookie("currentProblem") ? JSON.parse(getCookie("currentProblem")) : {};
 
 document.addEventListener('DOMContentLoaded', function() {
     if (!getCookie('cookiesAccepted')) {
@@ -13,20 +13,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function generateProblem() {
-    let difficulty = Math.floor(streak / 5) + 1;
+    let difficulty = Math.floor(Math.random() * (streak + 1)) + 1;
     let num1 = Math.floor(Math.random() * 10 * difficulty);
     let num2 = Math.floor(Math.random() * 10 * difficulty);
-    let operator;
-
-    if (streak < 10) {
-        operator = Math.random() > 0.5 ? '+' : '-';
-    } else if (streak < 20) {
-        let operators = ['+', '-', '*', '/'];
-        operator = operators[Math.floor(Math.random() * operators.length)];
-    } else {
-        let operators = ['+', '-', '*', '/', '^', '√'];
-        operator = operators[Math.floor(Math.random() * operators.length)];
-    }
+    let operators = ['+', '-', '*', '/', '^', '√'];
+    let operator = operators[Math.floor(Math.random() * operators.length)];
 
     let answer;
     switch (operator) {
@@ -40,13 +31,16 @@ function generateProblem() {
             answer = num1 * num2;
             break;
         case '/':
-            num2 = num2 === 0 ? 1 : num2; //distinto de 0
-            answer = Math.floor(num1 / num2);
-            num1 = answer * num2; // divicion exacta
+            num2 = num2 === 0 ? 1 : num2; // distinto de 0
+            answer = num1 / num2;
+            if (!Number.isInteger(answer)) {
+                answer = Math.floor(answer);
+                num1 = answer * num2; // división exacta
+            }
             break;
         case '^':
-            answer = Math.pow(num1, 2);
-            num2 = 2;
+            num2 = Math.floor(Math.random() * 6); // potencia entre 0 y 5
+            answer = Math.pow(num1, num2);
             break;
         case '√':
             answer = Math.floor(Math.sqrt(num1));
@@ -62,6 +56,8 @@ function generateProblem() {
         answer: answer
     };
 
+    setCookie("currentProblem", JSON.stringify(currentProblem), 365);
+
     let problemText = operator === '√' ? `√${num1} = ?` : `${num1} ${operator} ${num2} = ?`;
     document.getElementById('problem').innerText = problemText;
 }
@@ -69,13 +65,12 @@ function generateProblem() {
 function checkAnswer() {
     let userAnswer = parseInt(document.getElementById('answer').value);
     let feedback = document.getElementById('feedback');
-
-    if (isNaN(userAnswer)) {
+    let answerValue = document.getElementById('answer').value;
+    if (isNaN(userAnswer) || !/^-?\d+$/.test(answerValue)) {
         feedback.innerText = "Por favor, ingrese un número válido.";
         feedback.style.color = "red";
         return;
     }
-
     if (userAnswer === currentProblem.answer) {
         streak++;
         setCookie("streak", streak, 365);
@@ -125,5 +120,10 @@ function handleKeyDown(event) {
 
 window.onload = function () {
     updateStreak();
-    generateProblem();
+    if (Object.keys(currentProblem).length === 0) {
+        generateProblem();
+    } else {
+        let problemText = currentProblem.operator === '√' ? `√${currentProblem.num1} = ?` : `${currentProblem.num1} ${currentProblem.operator} ${currentProblem.num2} = ?`;
+        document.getElementById('problem').innerText = problemText;
+    }
 }
