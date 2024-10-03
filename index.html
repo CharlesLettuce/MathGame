@@ -13,7 +13,7 @@
                 <h1 class="card-title">Problemas Matemáticos</h1>
                 <div class="problem" id="problem"></div>
                 <div class="form-group">
-                    <input type="text" id="answer" class="input" placeholder="Tu respuesta" onkeydown="handleKeyDown(event)" pattern="-?[0-9]*">
+                    <input type="text" inputmode="numeric" id="answer" class="input" placeholder="Tu respuesta" onkeydown="handleKeyDown(event)" pattern="-?[0-9]*">
                 </div>
                 <div class="submitBtnDiv">
                     <button id="submitBtn" class="btn" onclick="checkAnswer()">Enviar</button>

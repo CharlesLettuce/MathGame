@@ -1,7 +1,7 @@
 let streak = getCookie("streak") ? parseInt(getCookie("streak")) : 0;
 let currentProblem = getCookie("currentProblem") ? JSON.parse(getCookie("currentProblem")) : {};
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const cookieCard = document.querySelector('.cookie-card');
     const allowCookieButton = document.getElementById('allowcokkie');
 
@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cookieCard.style.display = 'block';
     }
 
-    allowCookieButton.addEventListener('click', function() {
+    allowCookieButton.addEventListener('click', function () {
         cookieCard.style.display = 'none';
         localStorage.setItem('cookiesAccepted', 'true');
     });
@@ -19,10 +19,20 @@ function generateProblem() {
     let difficulty = Math.floor(Math.random() * (streak + 1)) + 1;
     let num1 = Math.floor(Math.random() * 10 * difficulty);
     let num2 = Math.floor(Math.random() * 10 * difficulty);
-    let operators = ['+', '-', '*', '/', '^', '√'];
-    let operator = operators[Math.floor(Math.random() * operators.length)];
     let answer;
+    let operators;
 
+    if (streak < 5) {
+        operators = ['+', '-'];
+    } else if (streak < 10) {
+        operators = ['+', '-', '*'];
+    } else if (streak < 15) {
+        operators = ['+', '-', '*', '/'];
+    } else {
+        operators = ['+', '-', '*', '/', '^', '√'];
+    }
+
+    let operator = operators[Math.floor(Math.random() * operators.length)];
     switch (operator) {
         case '+':
             answer = num1 + num2;
@@ -34,15 +44,15 @@ function generateProblem() {
             answer = num1 * num2;
             break;
         case '/':
-            num2 = num2 === 0 ? 1 : num2; // distinto de 0
+            num2 = num2 === 0 ? 1 : num2; // Denominador no puede ser 0
             answer = num1 / num2;
             if (!Number.isInteger(answer)) {
                 answer = Math.floor(answer);
-                num1 = answer * num2; // división exacta
+                num1 = answer * num2; // Ajustar num1 para que sea entero
             }
             break;
         case '^':
-            num2 = Math.floor(Math.random() * 6); // potencia entre 0 y 5
+            num2 = Math.floor(Math.random() * 6); // Exponente máximo de 5
             answer = Math.pow(num1, num2);
             break;
         case '√':
@@ -66,13 +76,13 @@ function generateProblem() {
 }
 
 function checkAnswer() {
-    let userAnswer = parseInt(document.getElementById('answer').value);
     let feedback = document.getElementById('feedback');
-    let answerValue = document.getElementById('answer').value;
+    let answerInput = document.getElementById('answer');
+    let answerValue = answerInput.value.trim();
     let button = document.getElementById('submitBtn');
 
-    if (answerValue.trim() === "") {
-        feedback.innerText = "Por favor, ingrese una respuesta.";
+    if (!/^-?\d+$/.test(answerValue)) {
+        feedback.innerText = "Por favor, ingrese un número válido.";
         feedback.style.color = "red";
         button.classList.add('error');
         setTimeout(() => {
@@ -80,6 +90,8 @@ function checkAnswer() {
         }, 1000);
         return;
     }
+
+    let userAnswer = parseInt(answerValue, 10);
 
     if (userAnswer === currentProblem.answer) {
         streak++;
@@ -101,7 +113,7 @@ function checkAnswer() {
         }, 1000);
     }
 
-    document.getElementById('answer').value = '';
+    answerInput.value = '';
     updateStreak();
     generateProblem();
 }
