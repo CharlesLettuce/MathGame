@@ -71,8 +71,8 @@ function checkAnswer() {
     let answerValue = document.getElementById('answer').value;
     let button = document.getElementById('submitBtn');
 
-    if (isNaN(userAnswer) || !/^-?\d+$/.test(answerValue)) {
-        feedback.innerText = "Por favor, ingrese un número válido.";
+    if (answerValue.trim() === "") {
+        feedback.innerText = "Por favor, ingrese una respuesta.";
         feedback.style.color = "red";
         button.classList.add('error');
         setTimeout(() => {
