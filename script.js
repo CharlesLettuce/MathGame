@@ -22,11 +22,11 @@ function generateProblem() {
     let answer;
     let operators;
 
-    if (streak < 5) {
+    if (streak < 10) {
         operators = ['+', '-'];
-    } else if (streak < 10) {
+    } else if (streak < 16) {
         operators = ['+', '-', '*'];
-    } else if (streak < 15) {
+    } else if (streak < 24) {
         operators = ['+', '-', '*', '/'];
     } else {
         operators = ['+', '-', '*', '/', '^', '√'];
