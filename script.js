@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function generateProblem() {
-    let difficulty = Math.floor(Math.random() * (streak + 1)) + 1;
+    let difficulty = Math.pow(1.1, streak);
     let num1 = Math.floor(Math.random() * 10 * difficulty);
     let num2 = Math.floor(Math.random() * 10 * difficulty);
     let answer;
